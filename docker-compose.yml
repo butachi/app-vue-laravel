@@ -1,0 +1,130 @@
+services:
+  frontend:
+    build: 
+      context: .
+      dockerfile: ./frontend/Dockerfile
+      target: dev
+    restart: unless-stopped
+    volumes:
+      - ./frontend:/usr/src
+    environment:
+      - NODE_ENV=local
+
+  backend:
+    build:
+      args:
+        - user=butachi
+        - uid=1000
+      context: .
+      dockerfile: ./backend/Dockerfile
+      target: backend
+    command: sh -c "./wait-for-it.sh mysql:3306 -t 30 && ./wait-for-it.sh redis:6379 -t 30 && php-fpm"
+    restart: unless-stopped
+    volumes:
+      - ./backend/app:/usr/src/app
+      - ./backend/config:/usr/src/config
+      - ./backend/database:/usr/src/database
+      - ./backend/routes:/usr/src/routes
+      - ./backend/storage:/usr/src/storage
+      - ./backend/tests:/usr/src/tests
+      - ./backend/.env:/usr/src/.env
+    depends_on:
+      - migrate
+      - mysql
+      - redis
+
+  redis:
+    image: redis:7.0.11-alpine
+    restart: unless-stopped
+    volumes:
+      - ./redisdata:/data
+    ports:
+      - "63790:6379"
+  mysql:
+    build: 
+      args:
+        password: ${DB_PASSWORD}
+      context: .
+      dockerfile: ./Dockerfile.mysql
+    restart: unless-stopped
+    volumes:
+      - ./mysqldata:/var/lib/mysql
+    ports:
+      - "33060:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+  migrate:
+    build: 
+      args:
+        - user=butachi
+        - uid=1000
+      context: .
+      dockerfile: ./backend/Dockerfile
+    command: sh -c "./wait-for-it.sh mysql:3306 -t 30 && php /usr/src/artisan migrate --force"
+    restart: no
+    volumes:
+      - ./backend/.env:/usr/src/.env
+    depends_on:
+      - mysql
+  nginx:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile.nginx
+    restart: unless-stopped
+    depends_on:
+      - backend
+  proxy:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile.proxy
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    volumes:
+      - ./deployment/config/proxy.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - frontend
+      - nginx
+  scheduler:
+    build: 
+      args:
+        - user=butachi
+        - uid=1000
+      context: .
+      dockerfile: ./backend/Dockerfile
+      target: scheduler
+    restart: unless-stopped
+    volumes:
+      - ./backend/app:/usr/src/app
+      - ./backend/config:/usr/src/config
+      - ./backend/database:/usr/src/database
+      - ./backend/routes:/usr/src/routes
+      - ./backend/storage:/usr/src/storage
+      - ./backend/tests:/usr/src/tests
+      - ./backend/.env:/usr/src/.env
+    depends_on:
+      - migrate
+      - mysql
+      - redis
+  worker:
+    build: 
+      args:
+        - user=butachi
+        - uid=1000
+      context: .
+      dockerfile: ./backend/Dockerfile
+      target: worker
+    restart: unless-stopped
+    volumes:
+      - ./backend/app:/usr/src/app
+      - ./backend/config:/usr/src/config
+      - ./backend/database:/usr/src/database
+      - ./backend/routes:/usr/src/routes
+      - ./backend/storage:/usr/src/storage
+      - ./backend/tests:/usr/src/tests
+      - ./backend/.env:/usr/src/.env
+    depends_on:
+      - migrate
+      - mysql
+      - redis
+
