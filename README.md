@@ -1,4 +1,4 @@
-App - Learning English Project
+App - Vue - Laravel Project
 
 - backend uses Laravel framework (Laravel 11)
 - frontend uses Vue framework (Vue 3)
