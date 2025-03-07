@@ -68,7 +68,7 @@ docker compose restart <service>
 Rebuilds the images and then starts the whole project. It's useful when you're modifying the Dockerfile and test if it works
 ```
 docker compose up --build
-``
+```
 
 Show log of given service. If you don't specify the service it shows every container.
 ```
@@ -79,5 +79,11 @@ Stops and removes containers.
 ```
 docker compose down
 ```
-
+# Manually building from the source
+- Clone this repo `git clone https://github.com/butachi/app-vue-laravel.git`
+- `copy .env-example .env`
+- `cd api` then `cp .env-example .env` and `composer install`
+- `cd frontend` then run `npm install`
+- At root folder. run command `docker compose up`
+- Check url frontend: http://localhost:3000/ and backend: http://localhost:3000/api
 
