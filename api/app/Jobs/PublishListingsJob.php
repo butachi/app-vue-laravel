@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Listing;
+use App\Services\ListingService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
@@ -24,12 +25,11 @@ class PublishListingsJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(ListingService $listingService): void
     {
         Listing::query()
             ->shouldPublish()
             ->get()
-            ->each
-            ->publish();
+            ->each(fn (Listing $listing) => $listingService->publish($listing));
     }
 }

@@ -2,17 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\Listing\CannotPublishListingException;
 use App\Models\Listing;
+use App\Services\ListingService;
 use Illuminate\Http\Request;
 
 class ListingController extends Controller
 {
+    public function __construct(
+        private readonly ListingService $listingService
+    ) 
+    {
+        
+    }
     public function index()
     {
-        return Listing::query()
-            ->published()
-            ->accepted()
-            ->get();
+        return $this->listingService->getAll();
     }
 
     public function show(Listing $listing)
@@ -26,31 +31,35 @@ class ListingController extends Controller
 
     public function store(Request $request)
     {
-        return Listing::create($request->all());
+        return $this->listingService->upsert($request->all());
     }
 
     public function update(Request $request, Listing $listing)
     {
-        return $listing->fill($request->all());
+        return $this->listingService->upsert($request->all(), $listing);
     }
 
     public function destroy(Listing $listing)
     {
-        $listing->delete();
+        $this->listingService->delete($listing);
 
         return response()->noContent();
     }
 
     public function publish(Listing $listing)
     {
-        $listing->publish();
-
+        try {
+            $this->listingService->publish($listing);
+        } catch (CannotPublishListingException $ex) {
+            abort('422', $ex->getMessage());
+        }
+        
         return response()->noContent();
     }
 
     public function accept(Listing $listing)
     {
-        $listing->accept();
+        $this->listingService->accept($listing);
 
         return response()->noContent();
     }

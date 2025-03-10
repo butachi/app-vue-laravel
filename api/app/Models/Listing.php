@@ -13,29 +13,6 @@ class Listing extends Model
 
     protected $guarded = [];
 
-    public function publish(): void
-    {
-        if ($this->accepted) {
-            throw new Exception('Listing is not accepted yet');
-        }
-
-        $this->publish_at = now();
-        $this->published = true;
-        $this->save();
-    }
-
-    public function accept(): void
-    {
-        $this->accepted = true;
-
-        $this->accepted_at = now();
-
-        if (!$this->publish_at || $this->publish_at->isPast()) {
-            $this->publish();
-        }
-
-        $this->save();
-    }
 
     public function scopePublished(Builder $query)
     {
