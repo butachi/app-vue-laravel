@@ -1,5 +1,4 @@
-# This repository is base repos. 
-# it used to create the app at the first step.
+# This repository is base repos. it used to create the app at the first step.
 
 # 1. api folder: it is backend code of application, it also support api to frontend
 - It containers laravel and Dockerfile. At the current. It is only Dockerfile
