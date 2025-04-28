@@ -1,17 +1,13 @@
 # This repository is base repos. it used to create the app at the first step.
 
-# 1. api folder: it is backend code of application, it also support api to frontend
+1. api folder: it is backend code of application, it also support api to frontend
 - It containers laravel and Dockerfile. At the current. It is only Dockerfile
 
-# 2. frontend folder: it is frontend code of application. the users will be active with frontend
+2. frontend folder: it is frontend code of application. the users will be active with frontend
 - It containers Vue and Dockerfile
 
-# 3. deployment: this folder holding the config files
-
-# How to use it
-- clone this repository to create a new application
+3. deployment: this folder holding the config files
     
-
 
 # build images:
 1. Dockerizing a Laravel API
@@ -49,32 +45,32 @@ Supervisor is running in worker service.
 Run file sh to execute the php artisan scripts:
 
 # Run command for development
-Start the application (-d runs in detached mode so it runs in the background)
+- Start the application (-d runs in detached mode so it runs in the background)
 ```
 docker compose up or docker compose up -d 
 ```
 
-Execute commands in a give container. 
+- Execute commands in a give container. 
 ```
 docker compose exec api bash (php artisan tinker)
 ```
 
-Restart the given service. We often use this command to restart the worker
+- Restart the given service. We often use this command to restart the worker
 ```
 docker compose restart <service>
 ```
 
-Rebuilds the images and then starts the whole project. It's useful when you're modifying the Dockerfile and test if it works
+- Rebuilds the images and then starts the whole project. It's useful when you're modifying the Dockerfile and test if it works
 ```
 docker compose up --build
 ```
 
-Show log of given service. If you don't specify the service it shows every container.
+- Show log of given service. If you don't specify the service it shows every container.
 ```
 docker compose log -f --tail=400 <service>
 ```
 
-Stops and removes containers.
+- Stops and removes containers.
 ```
 docker compose down
 ```
