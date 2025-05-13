@@ -27,21 +27,21 @@ Change the port to 8080, you need update file vite.config.js with server.port an
 
 
 # docker compose with services
-- frontend
+- frontend:
 it's related to vue js
 - api: it's related to php-fpm
-- database
+- database:
 redis & mysql
-- migrate
+- migrate:
 from api/Dockerfile to migrate data
-- nginx
+- nginx:
 it's related to web server (api:9000)
-- reverse proxy
+- reverse proxy:
 it redirect to frontend or nginx container
-- scheduler and worker
+- scheduler and worker:
 They are basically the same as the api service but they target specific build stages.
 Supervisor is running in worker service.
-- update
+- update:
 Run file sh to execute the php artisan scripts:
 
 # Run command for development
